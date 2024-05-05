@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PantallaListadoBandas extends StatelessWidget {
+  const PantallaListadoBandas({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,6 +16,19 @@ class PantallaListadoBandas extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+
+          if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(
+            child: Text('No hay bandas disponibles'),
+          );
+        }
+
           final bandas = snapshot.data!.docs.where((banda) =>
               banda['NombreBanda'] != null &&
               banda['NombreAlbum'] != null &&
@@ -28,7 +43,7 @@ class PantallaListadoBandas extends StatelessWidget {
               return Dismissible(
                 key: Key(banda.id),
                 onDismissed: (direction) {
-                  eliminarBanda(banda.id);
+                  _eliminarBanda(banda.id);
                 },
                 background: Container(
                   color: Colors.red,
@@ -41,7 +56,7 @@ class PantallaListadoBandas extends StatelessWidget {
                   subtitle: Text('Álbum: ${banda['NombreAlbum']} - Año: ${banda['AñoLanzamiento']}'),
                   trailing: ElevatedButton(
                     onPressed: () {
-                      votarBanda(banda.id);
+                      _votarBanda(banda.id);
                     },
                     child: Text('Votar (${banda['CantidadVotos']})'),
                   ),           
@@ -51,25 +66,18 @@ class PantallaListadoBandas extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/crear');
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 
-  void votarBanda(String id) async {
-    CollectionReference bandas = FirebaseFirestore.instance.collection('bandas');
+  void _votarBanda(String id) async {
+    CollectionReference bandas = FirebaseFirestore.instance.collection('colecciones');
     DocumentSnapshot banda = await bandas.doc(id).get();
     int votosActuales = banda['CantidadVotos'];
     await bandas.doc(id).update({'CantidadVotos': votosActuales + 1});
   }
 
-  void eliminarBanda(String id) async {
-    CollectionReference bandas = FirebaseFirestore.instance.collection('bandas');
+  void _eliminarBanda(String id) async {
+    CollectionReference bandas = FirebaseFirestore.instance.collection('colecciones');
     await bandas.doc(id).delete();
   }
 }
-

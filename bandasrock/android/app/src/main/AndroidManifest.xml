@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:label="bandasrock"
+        android:label="Bandas de Rock"
         android:icon="@mipmap/ic_launcher">
 
         <!-- Actividad principal -->

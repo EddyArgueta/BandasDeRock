@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
 }
 
 def localProperties = new Properties()
@@ -23,8 +24,9 @@ if (flutterVersionName == null) {
 }
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion "31.0.0"
+    namespace "com.bandasrock"
+    compileSdk flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
 
     defaultConfig {
         applicationId "com.bandasrock"
@@ -33,7 +35,6 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
-        namespace "com.bandasrock"
     }
 
     compileOptions {
